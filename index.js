@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 // Endpoints
 
-// List all video_games in db
+// GET ENDPOINT
 app.get('/videogames', (req, res) => {
     const sql = `SELECT * FROM video_games;`;
     let params = [];
@@ -29,7 +29,7 @@ app.get('/videogames', (req, res) => {
     });
 });
 
-// List single video_game by id 
+// GET BY ID ENDPOINT
 app.get('/videogames/:id', (req, res) => {
     const sql = `SELECT * FROM video_games WHERE id = ?;`;
     const { id } = req.params;
@@ -72,6 +72,7 @@ app.post('/videogames', (req, res) => {
     db.run(sql, params, function(err, result) {
         if(err) {
             res.status(400).json({"error": err.message});
+            return;
         }
         // TODO: Handle duplicates? make a query to see to db to see if there exists same game with the same title
         
@@ -83,6 +84,46 @@ app.post('/videogames', (req, res) => {
             genre: game.genre,
             platform: game.platform,
             release_date: game.release_date
+        });
+    });
+});
+
+// PATCH ENDPOINT
+app.patch('/videogames/:id', (req, res) => {
+    // CATCH JSON request body
+    const { platform, release_date } = req.body;
+    const { id } = req.params;
+    const update = `UPDATE video_games SET
+        platform = COALESCE(?, platform),
+        release_date = COALESCE(?, release_date)
+        WHERE id = ?;`;
+    // COALESCE means if not null then update query else keep data
+
+    db.run(update, [platform, release_date, id], function(err, result) {
+        if(err) {
+            res.status(400).json({"error": err.message});
+            return;
+        }
+        res.status(200).json({
+            message: "SUCCESS",
+            changes: this.changes
+        });
+    });
+})
+// DELETE ENDPOINT
+
+app.delete('/videogames/:id', (req, res) => {
+    // Query the deletion of ID
+    const sql = `DELETE FROM video_games WHERE id = ?;`;
+    const { id } = req.params;
+    db.run(sql, [id], function(err, result) {
+        if(err) {
+            res.status(400).json({"error": err.message});
+            return;
+        }
+        res.status(200).json({
+            message: "SUCCESS",
+            changes: this.changes
         });
     });
 });
