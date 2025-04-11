@@ -11,7 +11,8 @@ const PORT = 3001;
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-// Endpoints
+// Adding Comment to test git commands
+// Endpoints or Routes
 
 // GET ENDPOINT
 app.get('/videogames', (req, res) => {
@@ -110,8 +111,8 @@ app.patch('/videogames/:id', (req, res) => {
         });
     });
 })
-// DELETE ENDPOINT
 
+// DELETE ENDPOINT
 app.delete('/videogames/:id', (req, res) => {
     // Query the deletion of ID
     const sql = `DELETE FROM video_games WHERE id = ?;`;
@@ -127,8 +128,6 @@ app.delete('/videogames/:id', (req, res) => {
         });
     });
 });
-
-
 
 
 // Listen to PORT for Http requests
